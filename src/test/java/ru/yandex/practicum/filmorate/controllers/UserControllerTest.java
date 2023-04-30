@@ -72,6 +72,7 @@ class UserControllerTest {
         assertEquals(user1.getLogin(), actual1.getName());
         assertEquals(user2.getLogin(), actual2.getName());
     }
+    
     @Test
     void updateUserTest() {
         User user1 = new User(1, "andrey@mail.ru", "andrey", "Andrey",
