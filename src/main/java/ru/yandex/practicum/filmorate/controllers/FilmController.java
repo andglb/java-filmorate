@@ -16,8 +16,8 @@ public class FilmController {
 
     @PostMapping
     public Film create(@RequestBody Film film) {
-        if (film.getName().isEmpty() || film.getName().isBlank() || film.getDescription().length() > 200
-                || film.getDescription().isEmpty()
+        if (film.getName() == null || film.getName().isBlank()
+                || film.getDescription().length() > 200 || film.getDescription().isEmpty()
                 || film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))
                 || film.getDuration() <= 0) {
             throw new ValidationException("Ошибка валидации!");

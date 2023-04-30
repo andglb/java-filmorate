@@ -17,13 +17,13 @@ public class UserController {
 
     @PostMapping
     public User create(@RequestBody User user) {
-        if (user.getEmail().isEmpty() || user.getEmail().isBlank() || !user.getEmail().contains("@")
-                || user.getLogin().isEmpty() || user.getLogin().contains(" ")
+        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")
+                || user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().contains(" ")
                 || user.getBirthday().isAfter(LocalDate.now())) {
             throw new ValidationException("Ошибка валидации!");
         }
 
-        if (user.getName() == null || user.getName().isBlank() || user.getName().isEmpty()) {
+        if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
 

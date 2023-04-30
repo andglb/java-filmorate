@@ -12,9 +12,9 @@ public class Film {
     private String name;
     private String description;
     private LocalDate releaseDate;
-    private Long duration;
+    private Integer duration;
 
-    public Film(Integer id, String name, String description, LocalDate releaseDate, Long duration) {
+    public Film(Integer id, String name, String description, LocalDate releaseDate, Integer duration) {
         this.id = id;
         this.name = name;
         this.description = description;
