@@ -44,8 +44,8 @@ class FilmControllerTest {
     void filmWithDescriptionOfMoreThan200Characters() {
         Film film = new Film(1, "Film_Name", "Этот текст придуман специально для тестирования + " +
                 "случая, когда в описании фильма написано больше двухсот символов. По условиям технического задания +" +
-                "в таком случае этот тест должен завершиться выбросом исключения. Спасибо за внимание :)"
-                , LocalDate.of(2021, 1, 1), 1);
+                "в таком случае этот тест должен завершиться выбросом исключения. Спасибо за внимание :)",
+                LocalDate.of(2021, 1, 1), 1);
 
         assertThrows(ValidationException.class, () -> filmController.create(film));
     }
