@@ -16,6 +16,7 @@ class FilmControllerTest {
     void createFilmTest() {
         Film film = new Film(1, "Film_Name", "Film_Description",
                 LocalDate.of(2021, 1, 1), 1);
+
         Film actual = filmController.create(film);
 
         assertEquals(film, actual);
