@@ -17,10 +17,20 @@ public class UserController {
 
     @PostMapping
     public User create(@RequestBody User user) {
-        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")
-                || user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().contains(" ")
-                || user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("Ошибка валидации!");
+        if (user.getEmail() == null || user.getEmail().isBlank()) {
+            throw new ValidationException("Ошибка валидации! Email не может быть пустым!");
+        }
+        if (!user.getEmail().contains("@")) {
+            throw new ValidationException("Ошибка валидации! Email должен содержать символ '@'!");
+        }
+        if (user.getLogin() == null || user.getLogin().isBlank()) {
+            throw new ValidationException("Ошибка валидации! Логин не может быть пустым!");
+        }
+        if (user.getLogin().contains(" ")) {
+            throw new ValidationException("Ошибка валидации! Логин не должен содержать пробелы!");
+        }
+        if (user.getBirthday().isAfter(LocalDate.now())) {
+            throw new ValidationException("Ошибка валидации! День рождения не может быть в будущем!");
         }
 
         if (user.getName() == null || user.getName().isBlank()) {
