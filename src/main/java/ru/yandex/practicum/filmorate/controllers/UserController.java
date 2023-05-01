@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -43,8 +44,19 @@ public class UserController {
         return user;
     }
 
+/*    @PostMapping
+    public User create(@Valid @RequestBody User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+        user.setId(++id);
+        users.put(user.getId(), user);
+        log.info("Получен POST-запрос к эндпоинту: '/users' на добавление пользователя");
+        return user;
+    }*/
+
     @PutMapping
-    public User update(@RequestBody User user) {
+    public User update(@Valid @RequestBody User user) {
         if (!users.containsKey(user.getId())) {
             throw new ValidationException("Пользователь с ID - " + user.getId() + " не найден!");
         }

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -36,16 +37,12 @@ public class FilmController {
     }
 
     /*
-    код представленный ниже не работает почему то :(
-    можете подсказать почему? может я упустил что-то? аннотации в классе Film добавлены
-
-    p.s. всё остальное исправил
+    В общем и целом, я не разобрался с этими аннотациями, они не работают почему то
     */
-
 /*    @PostMapping
     public Film create(@Valid @RequestBody Film film) {
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            throw new ValidationException("Ошибка валидации!");
+            throw new ValidationException("Ошибка валидации! Дата релиза не может быть раньше 28.12.1895!");
         }
         film.setId(++id);
         films.put(film.getId(), film);
@@ -54,7 +51,7 @@ public class FilmController {
     }*/
 
     @PutMapping
-    public Film update(@RequestBody Film film) {
+    public Film update(@Valid @RequestBody Film film) {
         if (!films.containsKey(film.getId())) {
             throw new ValidationException("Фильм с ID - " + film.getId() + " не найден!");
         }
