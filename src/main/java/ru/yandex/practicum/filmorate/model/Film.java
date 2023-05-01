@@ -16,7 +16,7 @@ public class Film {
     @NotBlank(message = "Имя не может быть пустым!")
     @NotNull(message = "Имя не может быть нулевым!")
     private String name;
-    @Size(min =1, max = 200)
+    @Size(min = 1, max = 200)
     private String description;
     @NotNull
     private LocalDate releaseDate;
