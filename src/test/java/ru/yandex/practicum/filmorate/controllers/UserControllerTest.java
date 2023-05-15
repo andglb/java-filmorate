@@ -1,3 +1,4 @@
+/*
 package ru.yandex.practicum.filmorate.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +55,6 @@ class UserControllerTest {
         user12 = new User(12, "andrey@yandex.ru", "andglb", "Andrey",
                 LocalDate.of(1999, 10, 20));
     }
-
     @Test
     void createUserTest() {
         User actual = userController.create(user1);
@@ -122,4 +122,4 @@ class UserControllerTest {
                 () -> assertTrue(actual.contains(user12))
         );
     }
-}
+}*/

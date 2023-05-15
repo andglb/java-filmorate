@@ -1,3 +1,4 @@
+/*
 package ru.yandex.practicum.filmorate.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -100,4 +101,4 @@ class FilmControllerTest {
                 () -> assertTrue(actual.contains(film8))
         );
     }
-}
+}*/

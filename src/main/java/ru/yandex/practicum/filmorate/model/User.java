@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,12 +8,13 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
-@AllArgsConstructor
 public class User {
-    private Integer id;
+    private Long id;
     @NotBlank(message = "Ошибка валидации! Email не может быть пустым!")
     @Email(message = "Ошибка валидации! Email должен содержать символ '@'!")
     private String email;
@@ -24,4 +24,20 @@ public class User {
     private String name;
     @PastOrPresent(message = "Ошибка валидации! День рождения не может быть в будущем!")
     private LocalDate birthday;
+    private Set<Long> friends;
+
+    public User(Long id, String email, String login, String name, LocalDate birthday, Set<Long> friends) {
+        this.id = id;
+        this.email = email;
+        this.login = login;
+        this.name = name;
+        if (name == null || name.isBlank()) {
+            this.name = login;
+        }
+        this.birthday = birthday;
+        this.friends = friends;
+        if (friends == null) {
+            this.friends = new HashSet<>();
+        }
+    }
 }
