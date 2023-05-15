@@ -12,6 +12,7 @@ import java.util.*;
 public class InMemoryUserStorage implements UserStorage {
     private Map<Long, User> users;
     private Long userId;
+    
     public InMemoryUserStorage() {
         users = new HashMap<>();
         userId = 0L;
