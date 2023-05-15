@@ -21,6 +21,7 @@ public class UserController {
         this.userStorage = userStorage;
         this.userService = userService;
     }
+
     @PostMapping
     public User create(@RequestBody User user) {
         log.info("Получен POST-запрос к эндпоинту: '/users' на добавление пользователя");
