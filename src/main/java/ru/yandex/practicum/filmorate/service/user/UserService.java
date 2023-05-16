@@ -1,11 +1,11 @@
 package ru.yandex.practicum.filmorate.service.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 public class UserService {
     private UserStorage userStorage;
 
-    @Autowired
     public UserService(UserStorage userStorage) {
         this.userStorage = userStorage;
     }
@@ -24,24 +23,23 @@ public class UserService {
         User friend = userStorage.getUserById(friendId);
         user.getFriends().add(friendId);
         friend.getFriends().add(userId);
+        userStorage.update(user);
+        userStorage.update(friend);
     }
 
     public void deleteFriend(Long userId, Long friendId) {
         User user = userStorage.getUserById(userId);
         User friend = userStorage.getUserById(friendId);
-        user.getFriends().remove(friend);
-        friend.getFriends().remove(user);
+        user.getFriends().remove(friendId);
+        friend.getFriends().remove(userId);
+        userStorage.update(user);
+        userStorage.update(friend);
     }
 
     public List<User> getFriends(Long userId) {
-        User user = userStorage.getUserById(userId);
-        List<User> friends = new ArrayList<>();
-        if (user.getFriends() != null) {
-            for (Long currentId : user.getFriends()) {
-                friends.add(userStorage.getUserById(currentId));
-            }
-        }
-        return friends;
+        return userStorage.getUserById(userId).getFriends().stream()
+                .map(friendsId -> getUserById(friendsId))
+                .collect(Collectors.toList());
     }
 
     public List<User> getCommonFriends(Long firstUserId, Long secondUserId) {
@@ -50,10 +48,43 @@ public class UserService {
         Set<Long> commonFriendsId = firstUser.getFriends().stream()
                 .filter(secondUser.getFriends()::contains)
                 .collect(Collectors.toSet());
-        List<User> commonFriends = new ArrayList<>();
-        for (Long id : commonFriendsId) {
-            commonFriends.add(userStorage.getUserById(id));
+        return commonFriendsId.stream()
+                .map(commonId -> getUserById(commonId))
+                .collect(Collectors.toList());
+    }
+
+    public List<User> getUsers() {
+        return userStorage.getUsers();
+    }
+
+    public User create(User user) {
+        if (user.getEmail() == null || user.getEmail().isBlank()) {
+            throw new ValidationException("Ошибка валидации! Email не может быть пустым!");
         }
-        return commonFriends;
+        if (!user.getEmail().contains("@")) {
+            throw new ValidationException("Ошибка валидации! Email должен содержать символ '@'!");
+        }
+        if (user.getLogin() == null || user.getLogin().isBlank()) {
+            throw new ValidationException("Ошибка валидации! Логин не может быть пустым!");
+        }
+        if (user.getLogin().contains(" ")) {
+            throw new ValidationException("Ошибка валидации! Логин не должен содержать пробелы!");
+        }
+        if (user.getBirthday().isAfter(LocalDate.now())) {
+            throw new ValidationException("Ошибка валидации! День рождения не может быть в будущем!");
+        }
+        return userStorage.create(user);
+    }
+
+    public User update(User user) {
+        return userStorage.update(user);
+    }
+
+    public User getUserById(Long userId) {
+        return userStorage.getUserById(userId);
+    }
+
+    public User deleteUserById(Long userId) {
+        return userStorage.delete(userId);
     }
 }

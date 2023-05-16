@@ -1,10 +1,15 @@
-/*
 package ru.yandex.practicum.filmorate.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.user.UserService;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -12,8 +17,9 @@ import java.util.Collection;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserControllerTest {
-
     private UserController userController;
+    private FilmStorage filmStorage;
+    private UserStorage userStorage;
     private User user1;
     private User user2;
     private User user3;
@@ -29,31 +35,33 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        userController = new UserController();
-        user1 = new User(1, "andrey@mail.ru", "andrey", "Andrey",
-                LocalDate.of(1999, 10, 20));
-        user2 = new User(2, "andrey-СОБАКА-mail.ru", "andrey", "Andrey",
-                LocalDate.of(1999, 10, 20));
-        user3 = new User(3, null, "andrey", "Andrey",
-                LocalDate.of(1999, 10, 20));
-        user4 = new User(4, " ", "andrey", "Andrey",
-                LocalDate.of(1999, 10, 20));
-        user5 = new User(5, "andrey@mail.ru", null, "Andrey",
-                LocalDate.of(1999, 10, 20));
-        user6 = new User(6, "andrey@mail.ru", "and rey", "Andrey",
-                LocalDate.of(1999, 10, 20));
-        user7 = new User(7, "andrey@mail.ru", "", "Andrey",
-                LocalDate.of(1999, 10, 20));
-        user8 = new User(8, "andrey@mail.ru", "andrey", "Andrey",
-                LocalDate.of(2025, 10, 20));
-        user9 = new User(9, "andrey@mail.ru", "andrey", null,
-                LocalDate.of(1999, 10, 20));
-        user10 = new User(10, "andrey@mail.ru", "andrey", " ",
-                LocalDate.of(1999, 10, 20));
-        user11 = new User(1, "andrey@yandex.ru", "andglb", "Andrey",
-                LocalDate.of(1999, 10, 20));
-        user12 = new User(12, "andrey@yandex.ru", "andglb", "Andrey",
-                LocalDate.of(1999, 10, 20));
+        filmStorage = new InMemoryFilmStorage();
+        userStorage = new InMemoryUserStorage();
+        userController = new UserController(new UserService(userStorage));
+        user1 = new User(1L, "andrey@mail.ru", "andrey", "Andrey",
+                LocalDate.of(1999, 10, 20), null);
+        user2 = new User(2L, "andrey-СОБАКА-mail.ru", "andrey", "Andrey",
+                LocalDate.of(1999, 10, 20), null);
+        user3 = new User(3L, null, "andrey", "Andrey",
+                LocalDate.of(1999, 10, 20), null);
+        user4 = new User(4L, " ", "andrey", "Andrey",
+                LocalDate.of(1999, 10, 20), null);
+        user5 = new User(5L, "andrey@mail.ru", null, "Andrey",
+                LocalDate.of(1999, 10, 20), null);
+        user6 = new User(6L, "andrey@mail.ru", "and rey", "Andrey",
+                LocalDate.of(1999, 10, 20), null);
+        user7 = new User(7L, "andrey@mail.ru", "", "Andrey",
+                LocalDate.of(1999, 10, 20), null);
+        user8 = new User(8L, "andrey@mail.ru", "andrey", "Andrey",
+                LocalDate.of(2025, 10, 20), null);
+        user9 = new User(9L, "andrey@mail.ru", "andrey", null,
+                LocalDate.of(1999, 10, 20), null);
+        user10 = new User(10L, "andrey@mail.ru", "andrey", " ",
+                LocalDate.of(1999, 10, 20), null);
+        user11 = new User(1L, "andrey@yandex.ru", "andglb", "Andrey",
+                LocalDate.of(1999, 10, 20), null);
+        user12 = new User(12L, "andrey@yandex.ru", "andglb", "Andrey",
+                LocalDate.of(1999, 10, 20), null);
     }
     @Test
     void createUserTest() {
@@ -101,12 +109,11 @@ class UserControllerTest {
     @Test
     void updateUserWithIncorrectIdTest() {
         userController.create(user1);
-        assertThrows(ValidationException.class, () -> userController.update(user12));
+        assertThrows(UserNotFoundException.class, () -> userController.update(user12));
     }
 
     @Test
-    void getUsers() {
-
+    void getUsersTest() {
         userController.create(user1);
         userController.create(user9);
         userController.create(user10);
@@ -122,4 +129,18 @@ class UserControllerTest {
                 () -> assertTrue(actual.contains(user12))
         );
     }
-}*/
+
+    @Test
+    void deleteUserTest() {
+        User userCreate = userController.create(user1);
+        User userDelete = userController.delete(userCreate.getId());
+
+        assertEquals(user1, userDelete);
+        assertEquals(0, userController.getUsers().size());
+    }
+
+    @Test
+    void deleteUserWithIncorrectIdTest() {
+        assertThrows(UserNotFoundException.class, () -> userController.delete(9999L));
+    }
+}
