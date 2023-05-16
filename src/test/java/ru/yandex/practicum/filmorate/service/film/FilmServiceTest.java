@@ -51,6 +51,7 @@ class FilmServiceTest {
         user3 = new User(3L, "andrey@gmail.com", "andrey", "Andrey",
                 LocalDate.of(2001, 12, 22), null);
     }
+
     @Test
     void addLikeTest() {
         Film firstFilm = filmService.create(film1);
@@ -70,6 +71,7 @@ class FilmServiceTest {
         assertThrows(UserNotFoundException.class, () -> filmService.addLike(firstFilm.getId(), 9999L));
         assertThrows(FilmNotFoundException.class, () -> filmService.addLike(9999L, firstUser.getId()));
     }
+
     @Test
     void deleteLikeTest() {
         Film firstFilm = filmService.create(film1);
@@ -89,7 +91,6 @@ class FilmServiceTest {
         assertThrows(UserNotFoundException.class, () -> filmService.deleteLike(firstFilm.getId(), 9999L));
         assertThrows(FilmNotFoundException.class, () -> filmService.deleteLike(9999L, firstUser.getId()));
     }
-
 
     @Test
     void getPopularTest() {

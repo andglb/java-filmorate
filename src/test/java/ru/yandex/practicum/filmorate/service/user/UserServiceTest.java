@@ -33,6 +33,7 @@ class UserServiceTest {
         user3 = new User(3L, "andrey@gmail.com", "andrey", "Andrey",
                 LocalDate.of(2001, 12, 22), null);
     }
+
     @Test
     void addFriendTest() {
         User firstUser = userService.create(user1);

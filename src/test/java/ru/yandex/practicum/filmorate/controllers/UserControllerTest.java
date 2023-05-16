@@ -63,6 +63,7 @@ class UserControllerTest {
         user12 = new User(12L, "andrey@yandex.ru", "andglb", "Andrey",
                 LocalDate.of(1999, 10, 20), null);
     }
+
     @Test
     void createUserTest() {
         User actual = userController.create(user1);
