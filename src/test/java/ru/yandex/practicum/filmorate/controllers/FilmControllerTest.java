@@ -39,7 +39,7 @@ class FilmControllerTest {
         film2 = new Film(2L, null, "Film_Description_2",
                 LocalDate.of(2021, 2, 2), 2, null);
         film3 = new Film(3L, " ", "Film_Description_3",
-                LocalDate.of(2021, 3, 3), 3, null);
+                LocalDate.of(2021, 3, 3), 3, null);;
         film4 = new Film(4L, "Film_Name_4", "Film_Description_4",
                 LocalDate.of(1894, 4, 4), 4, null);
         film5 = new Film(5L, "Film_Name_5", "Этот текст придуман специально для тестирования " +

@@ -9,11 +9,10 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-//в итоге я похоже всё равно не понял, но сделал вот так
-//изначально вообще имплементировал FilmStorage и переопределил методы, но потом понял, что это точно лишнее
 @Service
 public class FilmService {
     private FilmStorage filmStorage;
@@ -47,10 +46,8 @@ public class FilmService {
         if (count < 1) {
             throw new ValidationException("Количество фильмов не может быть меньше 1!");
         }
-        //если не против, то можно на "ты"?
-        //попробовал сделать по твоему совету и всё равно не работает, не видит метода "getLikes()"
-        /*return filmStorage.getFilms().stream()
-                .sorted(Comparator.comparingLong(Film -> (long) film.getLikes().size()).reversed())
+/*        return filmStorage.getFilms().stream()
+                .sorted(Comparator.comparingLong(film -> (long) film.getLikes().size()).reversed())
                 .limit(count)
                 .collect(Collectors.toList());*/
         return filmStorage.getFilms().stream()

@@ -24,6 +24,8 @@ public class Film {
     @Positive(message = "Ошибка валидации! Продолжительность должна быть больше нуля!")
     private Integer duration;
     private Set<Long> likes;
+/*    private Set<Genre> genres;
+    private Mpa mpa;*/
 
     public Film(Long id, String name, String description, LocalDate releaseDate, Integer duration, Set<Long> likes) {
         this.id = id;
@@ -36,4 +38,22 @@ public class Film {
             this.likes = new HashSet<>();
         }
     }
+
+/*    public Film(Long id, String name, String description, LocalDate releaseDate, Integer duration, Set<Long> likes,
+                Set<Genre> genres, Mpa mpa) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.likes = likes;
+        if (likes == null) {
+            this.likes = new HashSet<>();
+        }
+        this.genres = genres;
+        if (genres == null) {
+            this.genres = new HashSet<>();
+        }
+        this.mpa = mpa;
+    }*/
 }
