@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,12 +8,13 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
-@AllArgsConstructor
 public class Film {
-    private Integer id;
+    private Long id;
     @NotBlank(message = "Ошибка валидации! Имя не может быть пустым!")
     private String name;
     @Size(min = 1, max = 200, message = "Ошибка валидации! Описание должно содержать от 1 до 200 символов!")
@@ -23,4 +23,17 @@ public class Film {
     private LocalDate releaseDate;
     @Positive(message = "Ошибка валидации! Продолжительность должна быть больше нуля!")
     private Integer duration;
+    private Set<Long> likes;
+
+    public Film(Long id, String name, String description, LocalDate releaseDate, Integer duration, Set<Long> likes) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.likes = likes;
+        if (likes == null) {
+            this.likes = new HashSet<>();
+        }
+    }
 }

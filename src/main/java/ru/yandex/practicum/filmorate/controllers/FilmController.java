@@ -2,66 +2,63 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.film.FilmService;
 
-import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.*;
 
 @RestController
 @RequestMapping("/films")
 @Slf4j
 public class FilmController {
-    private Integer id = 0;
-    private Map<Integer, Film> films = new HashMap<>();
+    private FilmService filmService;
+
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @PostMapping
     public Film create(@RequestBody Film film) {
-      if (film.getName() == null || film.getName().isBlank()) {
-          throw new ValidationException("Ошибка валидации! Имя не может быть пустым!");
-      }
-      if (film.getDescription().length() > 200 || film.getDescription().isEmpty()) {
-          throw new ValidationException("Ошибка валидации! Описание должно содержать от 1 до 200 символов!");
-      }
-      if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-          throw new ValidationException("Ошибка валидации! Дата релиза должна быть не раньше 28.12.1895!");
-      }
-      if (film.getDuration() <= 0) {
-          throw new ValidationException("Ошибка валидации! Продолжительность должна быть больше нуля!");
-      }
-      film.setId(++id);
-      films.put(film.getId(), film);
-      log.info("Получен POST-запрос к эндпоинту: '/films' на добавление фильма");
-      return film;
+        log.info("Получен POST-запрос к эндпоинту: '/films' на добавление фильма");
+        return filmService.create(film);
     }
 
-    /*
-    В общем и целом, я не разобрался с этими аннотациями, они не работают почему то
-    */
-/*    @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            throw new ValidationException("Ошибка валидации! Дата релиза не может быть раньше 28.12.1895!");
-        }
-        film.setId(++id);
-        films.put(film.getId(), film);
-        log.info("Получен POST-запрос к эндпоинту: '/films' на добавление фильма");
-        return film;
-    }*/
-
     @PutMapping
-    public Film update(@Valid @RequestBody Film film) {
-        if (!films.containsKey(film.getId())) {
-            throw new ValidationException("Фильм с ID - " + film.getId() + " не найден!");
-        }
-        films.put(film.getId(), film);
+    public Film update(@RequestBody Film film) {
         log.info("Получен PUT-запрос к эндпоинту: '/films' на обновление фильма с ID - {}", film.getId());
-        return film;
+        return filmService.update(film);
     }
 
     @GetMapping
-    public Collection<Film> getFilms() {
-        return films.values();
+    public List<Film> getFilms() {
+        return filmService.getFilms();
+    }
+
+    @GetMapping("/{id}")
+    public Film getFilmById(@PathVariable Long id) {
+        return filmService.getFilmById(id);
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(@PathVariable Long id, @PathVariable Long userId) {
+        log.info("Получен PUT-запрос на добавление лайка к фильму");
+        filmService.addLike(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void deleteLike(@PathVariable Long id, @PathVariable Long userId) {
+        log.info("Получен DELETE-запрос на удаление лайка с фильма");
+        filmService.deleteLike(id, userId);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getPopular(@RequestParam(name = "count", defaultValue = "10") Integer count) {
+        return filmService.getPopular(count);
+    }
+
+    @DeleteMapping("/{id}")
+    public Film delete(@PathVariable Long id) {
+        log.info("Получен DELETE-запрос к эндпоинту: '/films' на удаление фильма с ID - {}", id);
+        return filmService.deleteFilmById(id);
     }
 }
