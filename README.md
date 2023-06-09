@@ -3,8 +3,7 @@
 ## Модель базы данных
 
 ---
-![modelBD.png](modelBD.png)
-
+![modelBD.jpg](modelBD.JPG)
 ## Примеры запросов в БД
 
 ---
@@ -29,8 +28,7 @@
     WHERE user_name = 'Андрей';
 ```
 
-</details>  
-
+</details>
 <details>
 <summary>Получить количество лайков к фильму '1+1'</summary>
 

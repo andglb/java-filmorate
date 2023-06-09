@@ -5,9 +5,11 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.film.FilmService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -20,6 +22,7 @@ class FilmControllerTest {
     private FilmController filmController;
     private FilmStorage filmStorage;
     private UserStorage userStorage;
+    private LikeStorage likeStorage;
     private Film film1;
     private Film film2;
     private Film film3;
@@ -33,25 +36,25 @@ class FilmControllerTest {
     void setUp() {
         filmStorage = new InMemoryFilmStorage();
         userStorage = new InMemoryUserStorage();
-        filmController = new FilmController(new FilmService(filmStorage, userStorage));
+        filmController = new FilmController(new FilmService(filmStorage, userStorage, likeStorage));
         film1 = new Film(1L, "Film_Name_1", "Film_Description_1",
-                LocalDate.of(2021, 1, 1), 1, null);
+                LocalDate.of(2021, 1, 1), 1, null, new Mpa(1, "G"), null);
         film2 = new Film(2L, null, "Film_Description_2",
-                LocalDate.of(2021, 2, 2), 2, null);
+                LocalDate.of(2021, 2, 2), 2, null, new Mpa(1, "G"), null);
         film3 = new Film(3L, " ", "Film_Description_3",
-                LocalDate.of(2021, 3, 3), 3, null);;
+                LocalDate.of(2021, 3, 3), 3, null, new Mpa(1, "G"), null);;
         film4 = new Film(4L, "Film_Name_4", "Film_Description_4",
-                LocalDate.of(1894, 4, 4), 4, null);
+                LocalDate.of(1894, 4, 4), 4, null, new Mpa(1, "G"), null);
         film5 = new Film(5L, "Film_Name_5", "Этот текст придуман специально для тестирования " +
                 "случая, когда в описании фильма написано больше двухсот символов. По условиям технического задания " +
                 "в таком случае этот тест должен завершиться выбросом исключения. Спасибо за внимание :)",
-                LocalDate.of(2021, 5, 5), 5, null);
+                LocalDate.of(2021, 5, 5), 5, null, new Mpa(1, "G"), null);
         film6 = new Film(6L, "Film_Name_6", "Film_Description_6",
-                LocalDate.of(2021, 6, 6), -6, null);
+                LocalDate.of(2021, 6, 6), -6, null, new Mpa(1, "G"), null);
         film7 = new Film(1L, "Film_Name_7", "Film_Description_7",
-                LocalDate.of(2021, 7, 7), 7, null);
+                LocalDate.of(2021, 7, 7), 7, null, new Mpa(1, "G"), null);
         film8 = new Film(8L, "Film_Name_8", "Film_Description_8",
-                LocalDate.of(2021, 8, 8), 8, null);
+                LocalDate.of(2021, 8, 8), 8, null, new Mpa(1, "G"), null);
     }
 
     @Test
