@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.film.FilmService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
+import ru.yandex.practicum.filmorate.storage.like.LikeDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -22,7 +22,7 @@ class FilmControllerTest {
     private FilmController filmController;
     private FilmStorage filmStorage;
     private UserStorage userStorage;
-    private LikeStorage likeStorage;
+    private LikeDbStorage likeDbStorage;
     private Film film1;
     private Film film2;
     private Film film3;
@@ -36,7 +36,7 @@ class FilmControllerTest {
     void setUp() {
         filmStorage = new InMemoryFilmStorage();
         userStorage = new InMemoryUserStorage();
-        filmController = new FilmController(new FilmService(filmStorage, userStorage, likeStorage));
+        filmController = new FilmController(new FilmService(filmStorage, userStorage, likeDbStorage));
         film1 = new Film(1L, "Film_Name_1", "Film_Description_1",
                 LocalDate.of(2021, 1, 1), 1, null, new Mpa(1, "G"), null);
         film2 = new Film(2L, null, "Film_Description_2",

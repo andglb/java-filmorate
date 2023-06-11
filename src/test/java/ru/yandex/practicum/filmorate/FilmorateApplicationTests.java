@@ -3,12 +3,15 @@ package ru.yandex.practicum.filmorate;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.service.film.FilmService;
 import ru.yandex.practicum.filmorate.service.user.UserService;
@@ -22,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -95,6 +99,7 @@ class FilmorateApplicationTests {
 		thirdFilm.setGenres(new HashSet<>(Arrays.asList(new Genre(2, "Драма"))));
 	}
 
+	@DisplayName("Проверяет создание и получение пользователя по ID")
 	@Test
 	public void createUserAndGetUserByIdTest() {
 		firstUser = userStorage.create(firstUser);
@@ -106,6 +111,7 @@ class FilmorateApplicationTests {
 								.hasFieldOrPropertyWithValue("name", "User_Name_1"));
 	}
 
+	@DisplayName("Проверяет метод получения всех пользователей")
 	@Test
 	public void getUsersTest() {
 		firstUser = userStorage.create(firstUser);
@@ -115,6 +121,7 @@ class FilmorateApplicationTests {
 		assertThat(listUsers).contains(secondUser);
 	}
 
+	@DisplayName("Проверяет обновление пользователя")
 	@Test
 	public void updateUserTest() {
 		firstUser = userStorage.create(firstUser);
@@ -132,14 +139,18 @@ class FilmorateApplicationTests {
 				);
 	}
 
+	@DisplayName("Проверяет удаление пользователя")
 	@Test
 	public void deleteUserTest() {
 		firstUser = userStorage.create(firstUser);
+		secondUser = userStorage.create(secondUser);
 		userStorage.delete(firstUser.getId());
 		List<User> listUsers = userStorage.getUsers();
-		assertThat(listUsers).hasSize(0);
+		assertThat(listUsers).hasSize(1);
+		assertThrows(UserNotFoundException.class, () -> userStorage.getUserById(firstUser.getId()));
 	}
 
+	@DisplayName("Проверяет создание и получение фильма по ID")
 	@Test
 	public void createFilmAndGetFilmByIdTest() {
 		firstFilm = filmStorage.create(firstFilm);
@@ -151,6 +162,7 @@ class FilmorateApplicationTests {
 				);
 	}
 
+	@DisplayName("Проверяет метод получения всех фильмов")
 	@Test
 	public void getFilmsTest() {
 		firstFilm = filmStorage.create(firstFilm);
@@ -162,6 +174,7 @@ class FilmorateApplicationTests {
 		assertThat(listFilms).contains(thirdFilm);
 	}
 
+	@DisplayName("Проверяет обновление фильма")
 	@Test
 	public void updateFilmTest() {
 		firstFilm = filmStorage.create(firstFilm);
@@ -182,6 +195,7 @@ class FilmorateApplicationTests {
 				);
 	}
 
+	@DisplayName("Проверяет удаление фильма")
 	@Test
 	public void deleteFilmTest() {
 		firstFilm = filmStorage.create(firstFilm);
@@ -189,12 +203,14 @@ class FilmorateApplicationTests {
 		filmStorage.delete(firstFilm.getId());
 		List<Film> listFilms = filmStorage.getFilms();
 		assertThat(listFilms).hasSize(1);
+		assertThrows(FilmNotFoundException.class, () -> filmStorage.getFilmById(firstFilm.getId()));
 		assertThat(Optional.of(listFilms.get(0)))
 				.hasValueSatisfying(film ->
 						AssertionsForClassTypes.assertThat(film)
 								.hasFieldOrPropertyWithValue("name", "Film_Name_2"));
 	}
 
+	@DisplayName("Проверяет добавление лайка к фильму")
 	@Test
 	public void addLikeTest() {
 		firstUser = userStorage.create(firstUser);
@@ -205,6 +221,7 @@ class FilmorateApplicationTests {
 		assertThat(firstFilm.getLikes()).contains(firstUser.getId());
 	}
 
+	@DisplayName("Проверяет удаление лайка")
 	@Test
 	public void deleteLikeTest() {
 		firstUser = userStorage.create(firstUser);
@@ -218,6 +235,7 @@ class FilmorateApplicationTests {
 		assertThat(firstFilm.getLikes()).contains(secondUser.getId());
 	}
 
+	@DisplayName("Проверяет метод просмотра самых популярных фильмов")
 	@Test
 	public void getPopularFilmsTest() {
 
@@ -257,6 +275,7 @@ class FilmorateApplicationTests {
 								.hasFieldOrPropertyWithValue("name", "Film_Name_1"));
 	}
 
+	@DisplayName("Проверяет метод для добавление в друзья")
 	@Test
 	public void addFriendTest() {
 		firstUser = userStorage.create(firstUser);
@@ -266,6 +285,7 @@ class FilmorateApplicationTests {
 		assertThat(userService.getFriends(firstUser.getId())).contains(secondUser);
 	}
 
+	@DisplayName("Проверяет метод для удаления из друзей")
 	@Test
 	public void deleteFriendTest() {
 		firstUser = userStorage.create(firstUser);
@@ -278,6 +298,7 @@ class FilmorateApplicationTests {
 		assertThat(userService.getFriends(firstUser.getId())).contains(thirdUser);
 	}
 
+	@DisplayName("Проверяет метод для получения списка друзей пользователя")
 	@Test
 	public void getFriendsTest() {
 		firstUser = userStorage.create(firstUser);
@@ -289,6 +310,7 @@ class FilmorateApplicationTests {
 		assertThat(userService.getFriends(firstUser.getId())).contains(secondUser, thirdUser);
 	}
 
+	@DisplayName("Проверяет метод для получений общих друзей пользователей")
 	@Test
 	public void getCommonFriendsTest() {
 		firstUser = userStorage.create(firstUser);

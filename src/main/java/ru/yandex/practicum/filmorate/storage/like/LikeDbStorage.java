@@ -4,24 +4,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.genre.GenreService;
-import ru.yandex.practicum.filmorate.service.mpa.MpaService;
+import ru.yandex.practicum.filmorate.storage.genre.InMemoryGenreStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.InMemoryMpaStorage;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Component
-public class LikeStorage {
+public class LikeDbStorage {
     private final JdbcTemplate jdbcTemplate;
-    private MpaService mpaService;
-    private GenreService genreService;
+    private InMemoryMpaStorage inMemoryMpaStorage;
+    private InMemoryGenreStorage inMemoryGenreStorage;
 
     @Autowired
-    public LikeStorage(JdbcTemplate jdbcTemplate, MpaService mpaService, GenreService genreService) {
+    public LikeDbStorage(JdbcTemplate jdbcTemplate, InMemoryMpaStorage inMemoryMpaStorage,
+                         InMemoryGenreStorage inMemoryGenreStorage) {
         this.jdbcTemplate = jdbcTemplate;
-        this.mpaService = mpaService;
-        this.genreService = genreService;
+        this.inMemoryMpaStorage = inMemoryMpaStorage;
+        this.inMemoryGenreStorage = inMemoryGenreStorage;
     }
 
     public void addLike(Long filmId, Long userId) {
@@ -45,14 +47,14 @@ public class LikeStorage {
                         rs.getString("description"),
                         rs.getDate("release_Date").toLocalDate(),
                         rs.getInt("duration"),
-                        new HashSet<>(getLikes(rs.getLong("id"))),
-                        mpaService.getMpaById(rs.getInt("rating_id")),
-                        genreService.getFilmGenres(rs.getLong("id"))),
+                        getLikes(rs.getLong("id")),
+                        inMemoryMpaStorage.getMpaById(rs.getInt("rating_id")),
+                        inMemoryGenreStorage.getFilmGenres(rs.getLong("id"))),
                 count);
     }
 
-    public List<Long> getLikes(Long filmId) {
+    public Set<Long> getLikes(Long filmId) {
         String sql = "SELECT user_id FROM film_likes WHERE film_id = ?";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getLong("user_id"), filmId);
+        return new HashSet<>(jdbcTemplate.query(sql, (rs, rowNum) -> rs.getLong("user_id"), filmId));
     }
 }

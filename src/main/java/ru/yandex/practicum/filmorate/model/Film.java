@@ -40,6 +40,9 @@ public class Film {
         this.likes = likes;
         this.mpa = mpa;
         this.genres = genres;
+        if (genres == null) {
+            this.genres = new HashSet<>();
+        }
     }
 
     public Map<String, Object> toMap() {

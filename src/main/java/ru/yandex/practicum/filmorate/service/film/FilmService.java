@@ -8,7 +8,7 @@ import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
+import ru.yandex.practicum.filmorate.storage.like.LikeDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
@@ -18,22 +18,22 @@ import java.util.List;
 public class FilmService {
     private FilmStorage filmStorage;
     private UserStorage userStorage;
-    private LikeStorage likeStorage;
+    private LikeDbStorage likeDbStorage;
 
 @Autowired
 public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
                    @Qualifier("userDbStorage") UserStorage userStorage,
-                   LikeStorage likeStorage) {
+                   LikeDbStorage likeDbStorage) {
     this.filmStorage = filmStorage;
     this.userStorage = userStorage;
-    this.likeStorage = likeStorage;
+    this.likeDbStorage = likeDbStorage;
 }
 
     public void addLike(Long filmId, Long userId) {
         Film film = filmStorage.getFilmById(filmId);
         if (film != null) {
             if (userStorage.getUserById(userId) != null) {
-                likeStorage.addLike(filmId, userId);
+                likeDbStorage.addLike(filmId, userId);
             } else {
                 throw new UserNotFoundException("Пользователь c ID - " + userId + " не найден!");
             }
@@ -46,7 +46,7 @@ public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
         Film film = filmStorage.getFilmById(filmId);
         if (film != null) {
             if (film.getLikes().contains(userId)) {
-                likeStorage.deleteLike(filmId, userId);
+                likeDbStorage.deleteLike(filmId, userId);
             } else {
                 throw new UserNotFoundException("Лайк от пользователя c ID - " + userId + " не найден!");
             }
@@ -59,7 +59,7 @@ public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
         if (count < 1) {
             new ValidationException("Количество фильмов для вывода не должно быть меньше 1");
         }
-        return likeStorage.getPopular(count);
+        return likeDbStorage.getPopular(count);
     }
 
     public List<Film> getFilms() {

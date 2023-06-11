@@ -4,37 +4,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
+import ru.yandex.practicum.filmorate.storage.genre.InMemoryGenreStorage;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class GenreService {
-
-    private GenreStorage genreStorage;
+    private InMemoryGenreStorage inMemoryGenreStorage;
 
     @Autowired
-    public GenreService(GenreStorage genreStorage) {
-        this.genreStorage = genreStorage;
+    public GenreService(InMemoryGenreStorage inMemoryGenreStorage) {
+        this.inMemoryGenreStorage = inMemoryGenreStorage;
     }
 
-    public Collection<Genre> getGenres() {
-        return genreStorage.getGenres().stream()
-                .sorted(Comparator.comparing(Genre::getId))
-                .collect(Collectors.toList());
+    public List<Genre> getGenres() {
+        return inMemoryGenreStorage.getGenres();
     }
 
     public Genre getGenreById(Integer id) {
-        return genreStorage.getGenreById(id);
+        return inMemoryGenreStorage.getGenreById(id);
     }
 
     public void putGenres(Film film) {
-        genreStorage.delete(film);
-        genreStorage.add(film);
+        inMemoryGenreStorage.putGenres(film);
     }
 
     public Set<Genre> getFilmGenres(Long filmId) {
-        return new HashSet<>(genreStorage.getFilmGenres(filmId));
+        return inMemoryGenreStorage.getFilmGenres(filmId);
     }
 }
+

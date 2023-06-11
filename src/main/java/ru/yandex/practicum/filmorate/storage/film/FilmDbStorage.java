@@ -10,28 +10,27 @@ import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.service.genre.GenreService;
-import ru.yandex.practicum.filmorate.service.mpa.MpaService;
-import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
+import ru.yandex.practicum.filmorate.storage.genre.InMemoryGenreStorage;
+import ru.yandex.practicum.filmorate.storage.like.LikeDbStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.InMemoryMpaStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component("filmDbStorage")
 public class FilmDbStorage implements FilmStorage {
-
     private final JdbcTemplate jdbcTemplate;
-    private MpaService mpaService;
-    private GenreService genreService;
-    private LikeStorage likeStorage;
+    private InMemoryMpaStorage inMemoryMpaStorage;
+    private InMemoryGenreStorage inMemoryGenreStorage;
+    private LikeDbStorage likeDbStorage;
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaService mpaService, GenreService genreService,
-                         LikeStorage likeStorage) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, InMemoryMpaStorage inMemoryMpaStorage,
+                         InMemoryGenreStorage inMemoryGenreStorage, LikeDbStorage likeDbStorage) {
         this.jdbcTemplate = jdbcTemplate;
-        this.mpaService = mpaService;
-        this.genreService = genreService;
-        this.likeStorage = likeStorage;
+        this.inMemoryMpaStorage = inMemoryMpaStorage;
+        this.inMemoryGenreStorage = inMemoryGenreStorage;
+        this.likeDbStorage = likeDbStorage;
     }
 
     @Override
@@ -43,9 +42,9 @@ public class FilmDbStorage implements FilmStorage {
                 rs.getString("description"),
                 rs.getDate("release_date").toLocalDate(),
                 rs.getInt("duration"),
-                new HashSet<>(likeStorage.getLikes(rs.getLong("id"))),
-                mpaService.getMpaById(rs.getInt("rating_id")),
-                genreService.getFilmGenres(rs.getLong("id")))
+                new HashSet<>(likeDbStorage.getLikes(rs.getLong("id"))),
+                inMemoryMpaStorage.getMpaById(rs.getInt("rating_id")),
+                inMemoryGenreStorage.getFilmGenres(rs.getLong("id")))
         );
 
     }
@@ -56,12 +55,12 @@ public class FilmDbStorage implements FilmStorage {
                 .withTableName("films")
                 .usingGeneratedKeyColumns("id");
         film.setId(simpleJdbcInsert.executeAndReturnKey(film.toMap()).longValue());
-        film.setMpa(mpaService.getMpaById(film.getMpa().getId()));
+        film.setMpa(inMemoryMpaStorage.getMpaById(film.getMpa().getId()));
         if (film.getGenres() != null) {
             for (Genre genre : film.getGenres()) {
-                genre.setName(genreService.getGenreById(genre.getId()).getName());
+                genre.setName(inMemoryGenreStorage.getGenreById(genre.getId()).getName());
             }
-            genreService.putGenres(film);
+            inMemoryGenreStorage.putGenres(film);
         }
         return film;
     }
@@ -81,17 +80,17 @@ public class FilmDbStorage implements FilmStorage {
                 film.getDuration(),
                 film.getMpa().getId(),
                 film.getId()) != 0) {
-            film.setMpa(mpaService.getMpaById(film.getMpa().getId()));
+            film.setMpa(inMemoryMpaStorage.getMpaById(film.getMpa().getId()));
             if (film.getGenres() != null) {
                 Collection<Genre> sortGenres = film.getGenres().stream()
                         .sorted(Comparator.comparing(Genre::getId))
                         .collect(Collectors.toList());
                 film.setGenres(new LinkedHashSet<>(sortGenres));
                 for (Genre genre : film.getGenres()) {
-                    genre.setName(genreService.getGenreById(genre.getId()).getName());
+                    genre.setName(inMemoryGenreStorage.getGenreById(genre.getId()).getName());
                 }
             }
-            genreService.putGenres(film);
+            inMemoryGenreStorage.putGenres(film);
             return film;
         } else {
             throw new FilmNotFoundException("Фильм с ID - " + film.getId() + " не найден!");
@@ -106,15 +105,15 @@ public class FilmDbStorage implements FilmStorage {
         Film film;
         SqlRowSet filmRows = jdbcTemplate.queryForRowSet("SELECT * FROM films WHERE id = ?", filmId);
         if (filmRows.first()) {
-            Mpa mpa = mpaService.getMpaById(filmRows.getInt("rating_id"));
-            Set<Genre> genres = genreService.getFilmGenres(filmId);
+            Mpa mpa = inMemoryMpaStorage.getMpaById(filmRows.getInt("rating_id"));
+            Set<Genre> genres = inMemoryGenreStorage.getFilmGenres(filmId);
             film = new Film(
                     filmRows.getLong("id"),
                     filmRows.getString("name"),
                     filmRows.getString("description"),
                     filmRows.getDate("release_date").toLocalDate(),
                     filmRows.getInt("duration"),
-                    new HashSet<>(likeStorage.getLikes(filmRows.getLong("id"))),
+                    new HashSet<>(likeDbStorage.getLikes(filmRows.getLong("id"))),
                     mpa,
                     genres);
         } else {
@@ -136,3 +135,5 @@ public class FilmDbStorage implements FilmStorage {
         return film;
     }
 }
+
+
