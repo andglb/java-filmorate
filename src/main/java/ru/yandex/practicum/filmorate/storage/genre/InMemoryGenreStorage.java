@@ -13,7 +13,7 @@ public class InMemoryGenreStorage implements GenreStorage {
     private GenreDbStorage genreDbStorage;
 
     @Autowired
-    public InMemoryGenreStorage (GenreDbStorage genreDbStorage) {
+    public InMemoryGenreStorage(GenreDbStorage genreDbStorage) {
         this.genreDbStorage = genreDbStorage;
     }
 
