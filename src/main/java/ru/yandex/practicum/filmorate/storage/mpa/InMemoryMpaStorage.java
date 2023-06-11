@@ -13,7 +13,7 @@ public class InMemoryMpaStorage implements MpaStorage {
     private MpaDbStorage mpaDbStorage;
 
     @Autowired
-    public InMemoryMpaStorage (MpaDbStorage mpaDbStorage) {
+    public InMemoryMpaStorage(MpaDbStorage mpaDbStorage) {
         this.mpaDbStorage = mpaDbStorage;
     }
 
