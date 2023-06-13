@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.friend.FriendStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -20,6 +21,7 @@ class UserControllerTest {
     private UserController userController;
     private FilmStorage filmStorage;
     private UserStorage userStorage;
+    private FriendStorage friendStorage;
     private User user1;
     private User user2;
     private User user3;
@@ -37,7 +39,7 @@ class UserControllerTest {
     void setUp() {
         filmStorage = new InMemoryFilmStorage();
         userStorage = new InMemoryUserStorage();
-        userController = new UserController(new UserService(userStorage));
+        userController = new UserController(new UserService(userStorage, friendStorage));
         user1 = new User(1L, "andrey@mail.ru", "andrey", "Andrey",
                 LocalDate.of(1999, 10, 20), null);
         user2 = new User(2L, "andrey-СОБАКА-mail.ru", "andrey", "Andrey",
